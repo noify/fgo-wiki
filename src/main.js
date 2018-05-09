@@ -35,7 +35,7 @@ Vue.use(Vuetify, {
     transitions
   },
   theme: {
-    primary: '#ee44aa',
+    primary: '#2196f3',
     secondary: '#424242',
     accent: '#82B1FF',
     error: '#FF5252',
@@ -46,6 +46,8 @@ Vue.use(Vuetify, {
 })
 
 Vue.config.productionTip = false
+
+Vue.prototype.$assetsBaseUrl = 'http://kazemai.github.io/fgo-vz/'
 
 new Vue({
   store,

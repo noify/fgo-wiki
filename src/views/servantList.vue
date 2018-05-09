@@ -1,61 +1,88 @@
 <template>
   <div id="servantList">
-   <v-card>
-    <v-card-title>
-      Nutrition
-      <v-spacer></v-spacer>
-      <v-text-field
-        v-model="search"
-        append-icon="search"
-        label="Search"
-        single-line
-        hide-details
-      ></v-text-field>
-    </v-card-title>
-    <v-data-table
-      :headers="headers"
-      :items="desserts"
-      :loading="loading"
-      hide-actions
-      item-key="collectionNo"
-      :search="search"
-    >
-     <template slot="items" slot-scope="props">
-      <tr @click="props.expanded = !props.expanded">
-        <td><img width="60" :src="'http://kazemai.github.io/fgo-vz/' + props.item.face_icon"></td>
-        <td>{{ props.item.collectionNo }}</td>
-        <td>{{ props.item.rarity }}</td>
-        <td>{{ props.item.name }}</td>
-        <td>
-          <img width="30" :src="'http://kazemai.github.io/fgo-vz/common/images/icon/class/class_' + props.item.class + '_'+ props.item.rarity +'.png'">
-        </td>
-        <td>{{ props.item.hpMax }}</td>
-        <td>{{ props.item.atkMax }}</td>
-        <td>{{ props.item.cost }}</td>
-      </tr>
-      </template>
-      <template slot="expand" slot-scope="props">
-        <v-card flat>
-          <v-card-text><img v-for="cardId in props.item.cardIds" v-bind:key="props.item.svtid + '-' + cardId" style="margin-right: -30px;" :src="`http://kazemai.github.io/fgo-vz/common/images/icon/cmdCard/icon_cmdCard_${cardId}.png`" width="60"></v-card-text>
-          <v-card-text><img style="margin-left: 60px;" :src="`http://kazemai.github.io/fgo-vz/common/images/icon/cmdCard/icon_cmdCard_${props.item.mstSvtTreasureDevice}.png`" width="60"></v-card-text>
-        </v-card>
-      </template>
-    </v-data-table>
-      </v-card>
+    <v-layout row wrap>
+      <v-flex xs10 offset-xs1>
+    <v-card class="servantCard">
+      <v-card-title>
+        <v-spacer></v-spacer>
+        <v-text-field
+          v-model="search"
+          append-icon="search"
+          label="Search"
+          single-line
+          hide-details
+        ></v-text-field>
+      </v-card-title>
+      <v-data-table
+        :headers="headers"
+        :items="desserts"
+        :loading="loading"
+        hide-actions
+        item-key="collectionNo"
+        :search="search"
+      >
+      <template slot="items" slot-scope="props">
+        <tr>
+          <td>
+            <div class="svtF">
+              <img class="face" width="64" :src="$assetsBaseUrl + props.item.face_icon">
+              <img width="64"  v-if="props.item.rarity == 1 || props.item.rarity == 2" src="@/assets/images/box/servant_C.png">
+              <img width="64"  v-if="props.item.rarity == 3" src="@/assets/images/box/servant_S.png">
+              <img width="64"  v-if="props.item.rarity == 4 || props.item.rarity == 5" src="@/assets/images/box/servant_G.png">
+              <img class="class" :src="$assetsBaseUrl + '/common/images/icon/class/class_' + props.item.class + '_'+ props.item.rarity +'.png'">
+              <img class="rarity" v-if="props.item.rarity == 1" src="@/assets/images/box/star1.png">
+              <img class="rarity" v-if="props.item.rarity == 2" src="@/assets/images/box/star2.png">
+              <img class="rarity" v-if="props.item.rarity == 3" src="@/assets/images/box/star3.png">
+              <img class="rarity" v-if="props.item.rarity == 4" src="@/assets/images/box/star4.png">
+              <img class="rarity" v-if="props.item.rarity == 5" src="@/assets/images/box/star5.png">
+            </div>
+          </td>
+          <td>{{ props.item.collectionNo }}</td>
+          <td>{{ props.item.name }}</td>
+          <td>{{ props.item.hpMax }}</td>
+          <td>{{ props.item.atkMax }}</td>
+          <td>{{ props.item.cost }}</td>
+        </tr>
+        </template>
+      </v-data-table>
+    </v-card>
+
+    </v-flex>
+    </v-layout>
   </div>
 </template>
 
 <style lang='less'>
+#servantList{
+  .svtF{
+    position: relative;
+    width: 64px;
+    height: 70px;
+    img{
+      position: absolute;
+    }
+    .class{
+      top: 0px;
+      left: 0px;
+      width: 20px;
+    }
+    .rarity{
+      bottom: 6px;
+      right: -1px;
+      height: 12px;
+    }
+  }
+}
 </style>
 
 <script>
-const master = r => require.ensure([], () => r(require('@/util/master')), 'master')
+import svtList from '@/master/svtList'
 
 export default {
   name: 'servantList',
   data () {
     return {
-      loading: true,
+      loading: false,
       search: '',
       headers: [
         {
@@ -65,22 +92,15 @@ export default {
           value: 'face_icon'
         },
         { text: '编号', value: 'collectionNo' },
-        { text: '星数', value: 'rarity' },
         { text: '名称', value: 'name' },
-        { text: '职阶', value: 'class' },
         { text: '最大HP', value: 'hpMax' },
         { text: '最大ATK', value: 'atkMax' },
         { text: '费用', value: 'cost' },
       ],
-      desserts: []
+      desserts: svtList
     }
   },
   mounted () {
-    master( m => {
-      this.desserts = m.default.svtList()
-      this.loading = false
-      console.log(m.default.svtList())
-    })
   }
 }
 </script>
